@@ -1,0 +1,67 @@
+server:
+  port: 8082
+
+management:
+  server:
+    servlet:
+      context-path: /actuator
+
+
+
+spring:
+  application:
+    name: websocket-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://120.27.218.194:3306/sportlottery?useSSL=false&characterEncoding=utf-8&serverTimezone=UTC&useTimezone=true&allowMultiQueries=true
+    username: root
+    password: xing0125
+    type: com.alibaba.druid.pool.DruidDataSource
+
+
+eureka:
+  instance:
+    lease-renewal-interval-in-seconds: 10
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    hostname: ${spring.cloud.client.ip-address}
+    metadata-map:
+      management.context-path: /websocket-service/actuator
+    status-page-url-path: /info
+    health-check-url-path: /health
+  client:
+    registry-fetch-interval-seconds: 5
+    service-url:
+      defaultZone: http://120.27.218.194:9090/eureka
+
+#授权服务
+security:
+  oauth2:
+    client:
+      client-id: websocket-service
+      access-token-uri: http://auth-service/oauth/token
+      client-secret: vojVITl4jGygH&M^zAUxfpWQUNoVDhxB
+      grant-type: client_credentials
+      scope: all
+    resource:
+      token-info-uri: http://auth-service/oauth/check_token
+      prefer-token-info: true
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  global-config:
+    db-config:
+      id-type: auto # mybatis-plus数据库主键类型5种，这里使用自增，如需其它请查看文档
+
+# 开发、测试环境开启mybatis日志，生产环境关闭
+# 指定 mapper 文件所在的包
+
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+
+logging:
+  level:
+    com.yufei.learn.websocket: debug
+    org.springframework.messaging: debug
+    org.springframework.web.socket: debug
