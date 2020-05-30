@@ -30,12 +30,12 @@ public class UserServiceImpl implements UserService {
             Long userId = Long.valueOf(userName);
             PassUser user = authServiceClient.userInfo(userId);
             if (user == null) {
-                log.warn("未查到用户[" + userName + "]信息");
+                log.warn("not found user [" + userName + "]");
                 throw new UsernameNotFoundException("user not exist");
             }
             return user;
         } catch (Exception e) {
-            log.error("查询用户失败:{}", e);
+            log.error("search user failed:{}", e);
         }
         throw new UsernameNotFoundException("user not exist");
     }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * 自定义 ClientInboundChannel 拦截器
+ * custom ClientInboundChannel interceptor to process user jwtToken
  *
  * @author yufei.wang
  * @date 2020/05/23 17:12

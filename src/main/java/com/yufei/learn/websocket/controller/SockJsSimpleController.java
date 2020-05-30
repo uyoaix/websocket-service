@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.Map;
 
 /**
@@ -37,35 +38,30 @@ public class SockJsSimpleController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    @GetMapping("/testHttpReq")
-    public String testHttp(){
-        log.info("WebSocket invoke http req");
-        return "http success";
-    }
 
     @MessageMapping("/testDefault")
-    public String testSendDefault(){
+    public String testSendDefault() {
         log.info("WebSocket send default");
         return "default success";
     }
 
     /**
-     * 广播消息测试
+     * send topic message
      *
-     * @param msg 发送的消息
+     * @param msg message
      * @return String
      */
     @MessageMapping("/greeting")
     @SendTo("/topic/greetings")
     public String sendTo(Map<String, String> msg) {
         String greeting = JsonUtil.toJsonString(msg);
-        log.info("客户端发送消息内容：msg={}", msg);
+        log.info("client send message：msg={}", msg);
 
         return greeting;
     }
 
     /**
-     * 未登录用户点对点消息测试
+     * send message to anonymous user
      *
      * @return String
      */
@@ -76,24 +72,25 @@ public class SockJsSimpleController {
     }
 
     /**
-     * 登录用户点对点消息测试
+     * send message to authenticate user
      *
      * @return String
      */
-    @MessageMapping("/user/info")
-    @SendToUser(value = "/queue/userInfo", broadcast = false)
-    public String userInfo(@AuthenticationPrincipal PassUser passUser) {
-        log.info("获取用户信息：passUser={}", JsonUtil.toJsonString(passUser));
-        return JsonUtil.toJsonString(passUser);
-    }
+//    @MessageMapping("/user/info")
+//    @SendToUser(value = "/queue/userInfo", broadcast = false)
+//    public String userInfo(@AuthenticationPrincipal PassUser passUser) {
+//        log.info("get user info：passUser={}", JsonUtil.toJsonString(passUser));
+//        return JsonUtil.toJsonString(passUser);
+//    }
 
     /**
-     * 登录用户点对点消息测试
+     * send message to authenticate user
      *
+     * @param passUser
      */
     @MessageMapping("/user/info")
-    public void userInfo2(@AuthenticationPrincipal PassUser passUser) {
-        log.info("获取用户信息：passUser={}", JsonUtil.toJsonString(passUser));
+    public void userInfo2(Principal passUser) {
+        log.info("get user info：passUser={}", JsonUtil.toJsonString(passUser));
         simpMessagingTemplate.convertAndSendToUser(passUser.getName(), "/queue/userInfo", JsonUtil.toJsonString(passUser));
     }
 
@@ -102,7 +99,7 @@ public class SockJsSimpleController {
 //    public String userInfo(@Header("Authorization") String token) {
 //        if(!StringUtils.isEmpty(token)){
 //            PassUser passUser = authServiceClient.userInfo(token);
-//            log.info("获取用户信息：passUser={}", JsonUtil.toJsonString(passUser));
+//            log.info("get user info：passUser={}", JsonUtil.toJsonString(passUser));
 //            return JsonUtil.toJsonString(passUser);
 //        } else {
 //            return  "token is null";
@@ -111,13 +108,13 @@ public class SockJsSimpleController {
 
     @GetMapping("/send/public")
     public void sendToPublic() {
-        log.info("服务端发送消息");
+        log.info("sever send a message");
         String msg = "send a message";
         sockJsSimpleService.sendToPublic(msg);
     }
 
     @SubscribeMapping("/user/testSubscribeMessage")
-    public String subScribeMessage(){
+    public String subScribeMessage() {
         return "SubscribeMessage";
     }
 

@@ -63,5 +63,5 @@ ribbon:
 logging:
   level:
     com.yufei.learn.websocket: debug
-    org.springframework.messaging: debug
-    org.springframework.web.socket: debug
+    org.springframework.messaging: trace
+    org.springframework.web.socket: trace
